@@ -7,7 +7,6 @@
 
 # ### IMPORT LIBRARIES AND DATASET
 
-# In[34]:
 
 
 import numpy as np
@@ -20,14 +19,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[35]:
 
 
 train_df = pd.read_csv('train.csv')
 train_df.head()
-
-
-# In[36]:
 
 
 test_df = pd.read_csv('test.csv')
@@ -36,13 +31,9 @@ test_df.head()
 
 # ### EXPLORATORY DATA ANALYSIS
 
-# In[37]:
-
 
 sns.countplot (y = 'target', data =train_df)
 
-
-# In[38]:
 
 
 fig,(ax1,ax2)=plt.subplots(1,2,figsize=(10,5))
@@ -58,16 +49,11 @@ plt.show()
 
 # ### TEXT CLEANING
 
-# In[39]:
-
-
 # LOWERCASE REMOVAL
 
 train_df["text_clean"] = train_df["text"].apply(lambda x: x.lower())
 test_df["text_clean"] = test_df["text"].apply(lambda x: x.lower())
 
-
-# In[40]:
 
 
 # SPECIAL CHARACTER REMOVAL
@@ -75,8 +61,6 @@ test_df["text_clean"] = test_df["text"].apply(lambda x: x.lower())
 train_df['text']= train_df['text'].str.replace('rt ',"").str.replace('@','').str.replace('#','').str.replace('[^\w\s]','').str.replace('[1-9]','')
 test_df['text']= test_df['text'].str.replace('rt ',"").str.replace('@','').str.replace('#','').str.replace('[^\w\s]','').str.replace('[1-9]','')
 
-
-# In[41]:
 
 
 # REMOVE URL
@@ -88,9 +72,6 @@ train_df["text_clean"] = train_df["text_clean"].apply(lambda x: remove_URL(x))
 test_df["text_clean"] = test_df["text_clean"].apply(lambda x: remove_URL(x))
 
 
-# In[42]:
-
-
 # REMOVE HTML
 
 def remove_html(text):
@@ -100,8 +81,6 @@ def remove_html(text):
 train_df["text_clean"] = train_df["text_clean"].apply(lambda x: remove_html(x))
 test_df["text_clean"] = test_df["text_clean"].apply(lambda x: remove_html(x))
 
-
-# In[43]:
 
 
 # REMOVE EMOJIS
@@ -123,8 +102,6 @@ train_df["text_clean"] = train_df["text_clean"].apply(lambda x: remove_emojis(x)
 test_df["text_clean"] = test_df["text_clean"].apply(lambda x: remove_emojis(x))
 
 
-# In[44]:
-
 
 # REMOVE PUNCTUATION
 
@@ -136,8 +113,6 @@ train_df["text_clean"] = train_df["text_clean"].apply(lambda x: remove_punct(x))
 test_df["text_clean"] = test_df["text_clean"].apply(lambda x: remove_punct(x))
 
 
-# In[45]:
-
 
 # REMOVAL OF NON-ASCII VALUES
 
@@ -148,15 +123,10 @@ train_df["text_clean"] = train_df["text_clean"].apply(lambda x: remove_non_ascii
 test_df["text_clean"] = test_df["text_clean"].apply(lambda x: remove_non_ascii(x))
 
 
-# In[46]:
-
-
 import nltk
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-
-# In[47]:
 
 
 # STOP WORDS REMOVAL
@@ -172,19 +142,13 @@ test_df['text'] = train_df['text'].apply(lambda x: ' '.join(term for term in x.s
 
 # #### FILLING MISSING VALUES
 
-# In[48]:
 
 
 train_df.isnull().sum()
 
 
-# In[49]:
-
 
 test_df.isnull().sum()
-
-
-# In[50]:
 
 
 train_df['location'] = train_df['location'].fillna('None')
@@ -195,7 +159,6 @@ test_df['keyword'] = test_df['keyword'].fillna('None')
 
 # ### DROP OF UNNESSESSARY FEATURE
 
-# In[51]:
 
 
 train_df = train_df.drop('id', axis=1)
@@ -204,7 +167,6 @@ test_df = test_df.drop('id', axis=1)
 
 # ### TOKENIZATION
 
-# In[52]:
 
 
 # TOKENIZATION
@@ -219,8 +181,6 @@ test_df['tokens'] = [tokenizer.tokenize(item) for item in test_df.text]
 
 
 # ### Lemmatization
-
-# In[53]:
 
 
 # LEMMATION
@@ -242,8 +202,6 @@ test_df['tokens'] = [lemmatize_item(item) for item in test_df.tokens]
 
 # ### VECTORIZATION
 
-# In[54]:
-
 
 # VECTORIZATION
 
@@ -258,17 +216,12 @@ y = train_df['target']
 
 # ### MODEL DATA SPLITTING
 
-# In[55]:
-
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 0)
 
 
 # ### LOGISTIC REGRESSION
-
-# In[56]:
-
 
 # LOGISTIC REGRESSION
 from sklearn.linear_model import LogisticRegression
@@ -287,8 +240,6 @@ log_pred = log.predict(X_test)
 
 # ### Accuracy
 
-# In[57]:
-
 
 # MODEL EVALUATION FOR LOGISTIC REGRESSION
 
@@ -301,8 +252,6 @@ print("\nACCURACY : ",acc)
 
 # ### Classification Report
 
-# In[58]:
-
 
 # Classification Report
 clf_report = classification_report(y_test,log_pred)
@@ -311,11 +260,8 @@ print("\nCLASSIFICATION REPORT:\n", clf_report)
 
 # ### Confusion Matrix
 
-# In[59]:
-
 
 # Confusion Matrix
 print("\nCONFUSION MATRIX:")
 sns.heatmap(confusion_matrix(y_test,log_pred),annot=True,fmt='g', cmap="RdYlGn_r")
 plt.show()
-
